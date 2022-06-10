@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# noqa: D100  # pylint: disable=C0114
+#  noqa: D100  # pylint: disable=C0114
 from __future__ import with_statement
 
 import logging

@@ -33,9 +33,6 @@ initialize-db:
 	@flask db migrate -m "Initial Migration."
 	@flask db upgrade
 
-init-db:
-	@flask db init
-
 upgrade-db:
 	@flask db upgrade
 
@@ -46,5 +43,4 @@ test-local:
 	@curl localhost:5000/
 	@curl localhost:5000/users
 
-# add initialize-db command
-all: update install install-dev pre-commit initial-tag init-db test seed-db run
+all: update install install-dev pre-commit initial-tag initialize-db test seed-db run
