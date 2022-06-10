@@ -9,6 +9,14 @@ from api.blueprints.default.models import User
 cli = FlaskGroup(app)
 
 
+@cli.command('create_db')
+def create_db():
+    """Create the database and all the tables."""
+    db.drop_all()
+    db.create_all()
+    db.session.commit()
+
+
 @cli.command('seed_db')
 def seed_db():
     """Add two users."""

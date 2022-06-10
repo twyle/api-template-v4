@@ -73,9 +73,7 @@ jobs:
 
     - name: Create the test tables
       run: |
-        flask db init
-        flask db migrate -m "Migration on github."
-        flask db upgrade
+        python manage.py create_db
 
     - name: Test with pytest
       run: |
@@ -148,9 +146,7 @@ jobs:
 
     - name: Create the development tables
       run: |
-        flask db init
-        flask db migrate -m "Migration on github."
-        flask db upgrade
+        python manage.py create_db
 
     - name: Test application
       run: |
