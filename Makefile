@@ -8,7 +8,7 @@ install-dev: requirements-dev.txt
 	@pip install -r requirements-dev.txt
 
 run:
-	@python main.py
+	@python manage.py run
 
 test:
 	@python -m pytest
@@ -26,7 +26,21 @@ initial-tag:
 	@git tag -a -m "Initial tag." v0.0.1
 
 bump-tag:
-	@cz bump
-	@cz changelog
+	@cz bump --check-consistency --changelog
 
-all: update install install-dev pre-commit tag test run
+initialize-db:
+	@flask db init
+	@flask db migrate -m "Initial Migration."
+	@flask db upgrade
+
+upgrade-db:
+	@flask db upgrade
+
+seed-db:
+	@python manage.py seed_db
+
+test-local:
+	@curl localhost:5000/
+	@curl localhost:5000/users
+
+all: update install install-dev pre-commit initial-tag initialize-db test seed-db run

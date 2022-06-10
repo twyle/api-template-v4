@@ -1,8 +1,10 @@
-name: Feature Development Build
+name: "Staging Build"
 
 on:
   push:
-    branches-ignore: [development, staging, production, release]
+    branches: [ staging ]
+  pull_request:
+    branches: [ staging ]
   workflow_dispatch:
 
 jobs:
@@ -64,7 +66,6 @@ jobs:
         echo FLASK_APP=${{secrets.FLASK_APP}} >> .env
         echo FLASK_ENV=${{secrets.FLASK_ENV}} >> .env
         echo SECRET_KEY=${{secrets.SECRET_KEY}} >> .env
-
         echo POSTGRES_HOST=${{secrets.POSTGRES_HOST}} >> .env
         echo POSTGRES_DB=${{secrets.POSTGRES_DB}} >> .env
         echo POSTGRES_PORT=${{secrets.POSTGRES_PORT}} >> .env
@@ -92,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
 
     environment:
-      name: Development
+      name: Staging
 
     services:
       postgres:
@@ -101,7 +102,7 @@ jobs:
           POSTGRES_USER: ${{secrets.POSTGRES_USER}}
           POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
           POSTGRES_PORT: ${{secrets.POSTGRES_PORT}}
-          POSTGRES_DB: ${{secrets.POSTGRES_DB}}_dev
+          POSTGRES_DB: ${{secrets.POSTGRES_DB}}_stage
         ports:
           - 5432:5432
         options: >-
@@ -109,7 +110,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
     needs: [Build]
 
     strategy:
@@ -130,21 +130,19 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-    - name: Create the Development Environment variables
+    - name: Create the Environment variables
       run: |
         touch .env
         echo FLASK_APP=${{secrets.FLASK_APP}} >> .env
         echo FLASK_ENV=${{secrets.FLASK_ENV}} >> .env
         echo SECRET_KEY=${{secrets.SECRET_KEY}} >> .env
-
         echo POSTGRES_HOST=${{secrets.POSTGRES_HOST}} >> .env
         echo POSTGRES_DB=${{secrets.POSTGRES_DB}} >> .env
         echo POSTGRES_PORT=${{secrets.POSTGRES_PORT}} >> .env
         echo POSTGRES_USER=${{secrets.POSTGRES_USER}} >> .env
         echo POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}} >> .env
 
-    - name: Create the development tables
+    - name: Create the staging tables
       run: |
         python manage.py create_db
 
