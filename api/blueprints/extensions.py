@@ -24,7 +24,11 @@ def create_logger():
     stream_handler.setFormatter(formatter)
 
     logger.addHandler(file_handler)
-    logger.addHandler(stream_handler)
+
+    flask_env = os.getenv('FLASK_ENV', 'development')
+
+    if flask_env == 'development':
+        logger.addHandler(stream_handler)
 
     return logger
 
