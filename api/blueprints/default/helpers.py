@@ -2,9 +2,8 @@
 """This module has methods that are used in the other modules in this package."""
 import re
 
-from ..extensions import app_logger, db
-from .constants import EMAIL_MAX_LENGTH
-from .exceptions import (
+from ..constants import EMAIL_MAX_LENGTH
+from ..exceptions import (
     EmailAddressTooLong,
     EmptyUserData,
     InvalidEmailAddressFormat,
@@ -14,6 +13,7 @@ from .exceptions import (
     UserDoesNotExists,
     UserExists,
 )
+from ..extensions import app_logger, db
 from .models import User
 
 

@@ -6,8 +6,9 @@ import sys
 from dotenv import load_dotenv
 from flask import Flask
 
+from .blueprints.auth.views import auth
 from .blueprints.default.views import default
-from .blueprints.extensions import app_logger, db
+from .blueprints.extensions import app_logger, db, jwt
 from .error_handlers import handle_bad_request
 from .extensions import migrate
 from .helpers import are_environment_variables_set, set_flask_environment
@@ -24,7 +25,9 @@ if not are_environment_variables_set():
 app = Flask(__name__)
 app_logger.info('Successfully created the application instance.')
 app.register_blueprint(default)
-app_logger.info('Successfully registered the default route.')
+app_logger.info('Successfully registered the default blueprint.')
+app.register_blueprint(blueprint=auth, name='auth')
+app_logger.info('Successfully registered the auth blueprint.')
 
 
 set_flask_environment(app)
@@ -37,6 +40,8 @@ db.init_app(app=app)
 app_logger.info('Successfully initialized the database instance.')
 migrate.init_app(app, db)
 app_logger.info('Successfully initialized the migrate instance.')
+jwt.init_app(app)
+app_logger.info('Successfully initialized the JWT instance.')
 
 app.register_error_handler(400, handle_bad_request)
 app_logger.info('Successfully registered te 400 error handler.')
