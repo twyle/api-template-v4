@@ -2,6 +2,7 @@
 """This module contains the routes associated with the default Blueprint."""
 from json import JSONDecodeError
 
+from flasgger import swag_from
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
@@ -13,6 +14,7 @@ from .models import User
 default = Blueprint('default', __name__, template_folder='templates', static_folder='static')
 
 
+@swag_from("docs/hello_world.yml", methods=['GET'])
 @default.route('/', methods=['GET'])
 def default_route():
     """Confirm that the application is working."""
