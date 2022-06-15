@@ -2,8 +2,8 @@
 """This module contains the database models used by the default blueprint."""
 from dataclasses import dataclass
 
+from ..constants import EMAIL_MAX_LENGTH
 from ..extensions import db
-from .constants import EMAIL_MAX_LENGTH
 
 
 @dataclass
