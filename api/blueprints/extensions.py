@@ -39,23 +39,46 @@ def create_logger():
 
 app_logger = create_logger()
 
-swagger_template = dict(
-    info = {  # noqa: E251
-        'title': LazyString(lambda: 'Flask API v4 Template.'),
-        'version': LazyString(lambda: '0.1'),
-        'description': LazyString(lambda: 'This document depicts documentation for the API v4 template.'),
+swagger_template = {
+    "swagger": "2.0",
+    "info": {
+        "title": "Template API V4",
+        "description": "Template for creating Flask APIs.",
+        "contact": {
+            "responsibleOrganization": "",
+            "responsibleDeveloper": "",
+            "email": "lyceokoth@gmail.com",
+            "url": "www.twitter.com/lylethedesigner",
+        },
+        "termsOfService": "www.twitter.com/deve",
+        "version": "1.0"
     },
-    host = LazyString(lambda: request.host)  # noqa: E251
-)
+    "host": LazyString(lambda: request.host),
+    "basePath": "/",  # base bash for blueprint registration
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "securityDefinitions": {
+        "APIKeyHeader": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "JWT Authorization header using the Bearer scheme. Example:\"Authorization: Bearer {token}\""
+        }
+    },
+}
+
 
 swagger_config = {
-    "headers": [],
+    "headers": [
+    ],
     "specs": [
         {
-            "endpoint": 'hello_world',
-            "route": '/hello_world.json',
-            "rule_filter": lambda rule: True,
-            "model_filter": lambda tag: True,
+            "endpoint": 'apispec',
+            "route": '/apispec.json',
+            "rule_filter": lambda rule: True,  # all in
+            "model_filter": lambda tag: True,  # all in
         }
     ],
     "static_url_path": "/flasgger_static",

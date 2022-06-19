@@ -27,7 +27,7 @@ app = Flask(__name__)
 app_logger.info('Successfully created the application instance.')
 app.register_blueprint(default)
 app_logger.info('Successfully registered the default blueprint.')
-app.register_blueprint(blueprint=auth, name='auth')
+app.register_blueprint(auth)
 app_logger.info('Successfully registered the auth blueprint.')
 
 app.json_encoder = LazyJSONEncoder
