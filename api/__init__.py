@@ -4,11 +4,12 @@ import os
 import sys
 
 from dotenv import load_dotenv
+from flasgger import LazyJSONEncoder, LazyString, Swagger
 from flask import Flask
 
 from .blueprints.auth.views import auth
 from .blueprints.default.views import default
-from .blueprints.extensions import app_logger, db, jwt
+from .blueprints.extensions import app_logger, db, jwt, swagger
 from .error_handlers import handle_bad_request
 from .extensions import migrate
 from .helpers import are_environment_variables_set, set_flask_environment
@@ -26,9 +27,11 @@ app = Flask(__name__)
 app_logger.info('Successfully created the application instance.')
 app.register_blueprint(default)
 app_logger.info('Successfully registered the default blueprint.')
-app.register_blueprint(blueprint=auth, name='auth')
+app.register_blueprint(auth)
 app_logger.info('Successfully registered the auth blueprint.')
 
+app.json_encoder = LazyJSONEncoder
+swagger.init_app(app)
 
 set_flask_environment(app)
 app_logger.info('Successfully set the environment variables.')
