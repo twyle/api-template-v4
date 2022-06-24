@@ -176,8 +176,11 @@ Finally, start the application
 ```sh
 make run
 ```
+## Application Use
 
+Then navigate to http://localhost:5000/apidocs, you will get
 
+![](api-docs.png)
 
 
 
