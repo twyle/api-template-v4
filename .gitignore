@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+migrations/
+
+api/app.log
+
+services/secrets/vault/data/

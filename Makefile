@@ -2,22 +2,16 @@ update:
 	@pip install --upgrade pip
 
 install:
-	@pip install -r requirements.txt
+	@pip install -r services/web/requirements.txt
 
-install-dev: requirements-dev.txt
+install-dev:
 	@pip install -r requirements-dev.txt
 
 run:
-	@python manage.py run
+	@cd services/web/ && gunicorn -w 4 -b 0.0.0.0:5000 main:app
 
 test:
 	@python -m pytest
-
-build:
-	@docker build -t ${imagename}:latest .
-
-run-docker:
-	@sudo docker run --env FLASK_ENV=development -p 5000:5000 ${imagename}:latest
 
 pre-commit:
 	@pre-commit install
@@ -28,19 +22,20 @@ initial-tag:
 bump-tag:
 	@cz bump --check-consistency --changelog
 
-initialize-db:
-	@flask db init
-	@flask db migrate -m "Initial Migration."
-	@flask db upgrade
+start-db-containers:
+	@sudo docker compose -f services/database/database-compose.yml up --build -d
 
-upgrade-db:
-	@flask db upgrade
+stop-db-containers:
+	@sudo docker compose -f services/database/database-compose.yml down -v
+
+create-db:
+	@python services/web/manage.py create_db
 
 seed-db:
-	@python manage.py seed_db
+	@python services/web/manage.py seed_db
 
 test-local:
 	@curl localhost:5000/
 	@curl localhost:5000/users
 
-all: update install install-dev pre-commit initial-tag initialize-db test seed-db run
+all: update install install-dev pre-commit initial-tag start-db-containers create-db test seed-db run
