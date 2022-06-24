@@ -9,6 +9,9 @@ from email.utils import formataddr
 from smtplib import SMTP_SSL, SMTPException
 
 import boto3
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class KinesisFirehoseDeliveryStreamHandler(logging.StreamHandler):
