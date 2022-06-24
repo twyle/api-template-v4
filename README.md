@@ -210,7 +210,7 @@ Again click on the try it out button
  
 Then use the credentials that you registered with to log in:
 
-![](api-log-admin-pass.png)
+![](api-login-pass.png)
  
 You should get back an access and refresh token
  
