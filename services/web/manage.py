@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 """This module executes the application."""
 
-from flask.cli import FlaskGroup
-
 from api import app, db
 from api.blueprints.default.models import User
+from flask.cli import FlaskGroup
 
 cli = FlaskGroup(app)
 

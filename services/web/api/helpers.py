@@ -28,16 +28,16 @@ def set_flask_environment(app) -> str:
     """
     try:
         if os.environ['FLASK_ENV'] == 'production':  # pragma: no cover
-            app.config.from_object('api.config.ProductionConfig')
+            app.config.from_object('api.config.config.ProductionConfig')
             app_logger.info('The FLASK_ENV is set to production. Using the production config.')
         elif os.environ['FLASK_ENV'] == 'development':  # pragma: no cover
-            app.config.from_object('api.config.DevelopmentConfig')
+            app.config.from_object('api.config.config.DevelopmentConfig')
             app_logger.info('The FLASK_ENV is set to development. Using the development config.')
         elif os.environ['FLASK_ENV'] == 'test':
-            app.config.from_object('api.config.TestingConfig')
+            app.config.from_object('api.config.config.TestingConfig')
             app_logger.info('The FLASK_ENV is set to test. Using the test config.')
         elif os.environ['FLASK_ENV'] == 'stage':
-            app.config.from_object('api.config.StagingConfig')
+            app.config.from_object('api.config.config.StagingConfig')
             app_logger.info('The FLASK_ENV is set to stage. Using the stage config.')
     except KeyError:
         app.config.from_object('api.config.DevelopmentConfig')
@@ -191,6 +191,13 @@ def are_environment_variables_set() -> bool:  # pylint: disable=R0911, R0915
         app_logger.info(f"The POSTGRES_PASSWORD is set to {os.environ['POSTGRES_PASSWORD']}")
     except KeyError:
         app_logger.exception('The POSTGRES_PASSWORD is not set')
+        return False
+
+    try:
+        os.environ['MAIL_HOST']  # pylint: disable=W0104
+        app_logger.info(f"The MAIL_HOST is set to {os.environ['MAIL_HOST']}")
+    except KeyError:
+        app_logger.exception('The MAIL_HOST is not set')
         return False
 
     try:

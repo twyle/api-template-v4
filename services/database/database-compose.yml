@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  test-db:
+    image: postgres
+    restart: always
+    env_file:
+      - ./.test-db-env
+    ports:
+      - 5433:5432
+
+  dev-db:
+    image: postgres
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.dev-db-env
+    ports:
+      - 5434:5432
+
+volumes:
+  postgres_data:
