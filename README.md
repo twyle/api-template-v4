@@ -181,10 +181,40 @@ make run
 Then navigate to http://localhost:5000/apidocs, you will get
 
 ![](api-docs.png)
+ 
+### Create a new Admin User
+ 
+To be able to use the application, first create an admin user by scrolling down to the Authentication section and selecting the button next to auth/register.
 
+![](api-docs.png)
+ 
+Then click the Try it out button
+ 
+![](api-docs.png)
+ 
+Enter an email, username and password. Then finally click the execute button
 
+![](api-docs.png)
+ 
+You should have created an admin.
 
+### Log into the Admin
 
+Loging in the admin gives you an access token that enables you to create new users. Again within the Autjentication section, select the button next to /auth/login.
+
+![](api-docs.png) 
+
+Again click on the try it out button
+ 
+![](api-docs.png)
+ 
+Then use the credentials that you registered with to log in:
+
+![](api-docs.png)
+ 
+You should get back an access and refresh token
+ 
+![](api-docs.png)
 
 
 
