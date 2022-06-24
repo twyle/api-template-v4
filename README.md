@@ -3,7 +3,7 @@
 
 ## Introduction
 
-The API itself is a simple flask application that enables an admnistrator to register. Upon logging in, they are issued with an access token that allows them to create a new user. You can read more about it, including how it was developed over at [How to Deploy a Production Grade Flask application to an AWS EC2 Instance using GitHub Actions.](https://medium.com/@lyle-okoth/how-to-deploy-a-production-grade-flask-application-to-an-aws-ec2-instance-using-github-actions-6241886b197).
+The API itself is a simple flask application that enables an admnistrator to register. Upon logging in, they are issued with an access token that allows them to create a new user.
 
 ## Application routes
 
