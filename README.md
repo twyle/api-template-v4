@@ -190,11 +190,11 @@ To be able to use the application, first create an admin user by scrolling down 
  
 Then click the Try it out button
  
-![](api-admin-try-it-out.png)
+![](api-register-admin-try-it-out.png)
  
 Enter an email, username and password. Then finally click the execute button
 
-![](api-admin-execute.png)
+![](api-create-admin-execute.png)
  
 You should have created an admin.
 
