@@ -214,7 +214,21 @@ Then use the credentials that you registered with to log in:
  
 You should get back an access and refresh token
  
-![](api-docs.png)
+![](api-access-token.png)
+ 
+Copy the access token, you will need it to authenticate your requests. Then at the top of the page, select the Authorize button:
+
+![](api-authorize-button.png)
+
+In the resulting field, enter the word Bearer then paste the access token i.e
+
+ ```sh
+ Bearer xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ ```
+ 
+![](api-authorize.png)
+ 
+You now have the authority to create new users or access any route in the application.
 
 
 
