@@ -28,6 +28,12 @@ start-db-containers:
 stop-db-containers:
 	@sudo docker compose -f services/database/database-compose.yml down -v
 
+start-vault:
+	@sudo docker compose -f services/secrets/vault-compose.yml up --build -d
+
+vault-bash:
+	@sudo docker compose exec vault bash
+
 create-db:
 	@python services/web/manage.py create_db
 

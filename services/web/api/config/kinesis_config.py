@@ -2,12 +2,16 @@
 """This module contain the confuguration for the application."""
 import json
 import logging
+import os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
 from smtplib import SMTP_SSL, SMTPException
 
 import boto3
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class KinesisFirehoseDeliveryStreamHandler(logging.StreamHandler):
@@ -26,7 +30,7 @@ class KinesisFirehoseDeliveryStreamHandler(logging.StreamHandler):
         except Exception:
             print('Firehose client initialization failed.')
 
-        self.__delivery_stream_name = "flask-logging-firehose-stream"
+        self.__delivery_stream_name = os.environ['FIREHOSE_DELIVERY_STREAM']
 
     def emit(self, record):
         """Send the formatted log to AWS Firehose."""
@@ -76,11 +80,11 @@ class CustomEmailLogger(logging.Handler):
         """Initialize the logger."""
         logging.Handler.__init__(self)
         self.mailport = 465
-        self.mailhost = "email-smtp.us-east-1.amazonaws.com"
+        self.mailhost = os.environ['MAIL_HOST']
         self.fromaddr = 'lyceokoth@gmail.com'
         self.toaddrs = 'lyceokoth@gmail.com'
-        self.username = 'AKIA52VMBL5RHSMWE5XT'
-        self.password = 'BHxLrWkMAfFbRCfGiASofC7K8L+SmUDRdQB72wKcjIz4'
+        self.username = os.environ['MAIL_USERNAME']
+        self.password = os.environ['MAIL_PASSWORD']
         self.sender_name = 'Lyle from Amazon'
 
     def emit(self, record):
