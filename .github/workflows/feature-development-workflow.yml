@@ -72,6 +72,11 @@ jobs:
         echo POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}} >> .env
 
         echo MAIL_HOST=${{secrets.MAIL_HOST}} >> .env
+        echo MAIL_PORT=${{secrets.MAIL_PORT}} >> .env
+        echo MAIL_USERNAME=${{secrets.MAIL_USERNAME}} >> .env
+        echo MAIL_PASSWORD=${{secrets.MAIL_PASSWORD}} >> .env
+
+        echo FIREHOSE_DELIVERY_STREAM=${{secrets.FIREHOSE_DELIVERY_STREAM}} >> .env
 
     - name: Create the test tables
       run: |
@@ -147,6 +152,11 @@ jobs:
         echo POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}} >> .env
 
         echo MAIL_HOST=${{secrets.MAIL_HOST}} >> .env
+        echo MAIL_PORT=${{secrets.MAIL_PORT}} >> .env
+        echo MAIL_USERNAME=${{secrets.MAIL_USERNAME}} >> .env
+        echo MAIL_PASSWORD=${{secrets.MAIL_PASSWORD}} >> .env
+
+        echo FIREHOSE_DELIVERY_STREAM=${{secrets.FIREHOSE_DELIVERY_STREAM}} >> .env
 
     - name: Create the development tables
       run: |
