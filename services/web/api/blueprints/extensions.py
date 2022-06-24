@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """This module creates the flask extensions that we will use."""
-import logging
-import os
+import logging.config
 
 from flasgger import LazyString, Swagger
 from flask import request
@@ -14,25 +13,45 @@ jwt = JWTManager()
 
 def create_logger():
     """Create the application logger."""
-    BASE_DIR = os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir))
-    LOG_FILE = os.getenv('LOG_FILE_PATH') or os.path.join(BASE_DIR, 'app.log')
+    config = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "standard": {
+                "format": "%(asctime)s %(name)s %(levelname)s %(message)s",
+                "datefmt": "%Y-%m-%dT%H:%M:%S%z",
+            },
+            "json": {
+                "format": "%(asctime)s %(name)s %(levelname)s %(message)s",
+                "datefmt": "%Y-%m-%dT%H:%M:%S%z",
+                "class": "pythonjsonlogger.jsonlogger.JsonFormatter"
+            },
+        },
+        "handlers": {
+            "standard": {
+                "class": "logging.StreamHandler",
+                "formatter": "json",
+            },
+            "kinesis": {
+                "class": "api.config.kinesis_config.KinesisFirehoseDeliveryStreamHandler",
+                "formatter": "json"
+            },
+            "critical mail handler": {
+                "class": "api.config.kinesis_config.CustomEmailLogger",
+                "formatter": "json"
+            }
+        },
+        "loggers": {
+            "": {
+                "handlers": ["standard", "kinesis", "critical mail handler"],
+                "level": logging.INFO
+            }
+        }
+    }
+
+    logging.config.dictConfig(config)
+
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.INFO)
-
-    formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
-
-    file_handler = logging.FileHandler(LOG_FILE)
-    file_handler.setFormatter(formatter)
-
-    stream_handler = logging.StreamHandler()
-    stream_handler.setFormatter(formatter)
-
-    logger.addHandler(file_handler)
-
-    flask_env = os.getenv('FLASK_ENV', 'development')
-
-    if flask_env == 'development':
-        logger.addHandler(stream_handler)
 
     return logger
 

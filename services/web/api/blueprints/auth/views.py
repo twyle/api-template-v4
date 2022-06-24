@@ -2,6 +2,7 @@
 """This module contains the routes associated with the auth Blueprint."""
 from json import JSONDecodeError
 
+from api.blueprints.auth.models import Admin
 from flasgger import swag_from
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import (
@@ -10,8 +11,6 @@ from flask_jwt_extended import (
     get_jwt_identity,
     jwt_required,
 )
-
-from api.blueprints.auth.models import Admin
 
 from ..extensions import app_logger
 from .helpers import handle_create_admin, handle_get_admin, handle_update_admin
