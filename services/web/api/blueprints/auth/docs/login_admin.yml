@@ -20,7 +20,7 @@ parameters:
           format: password
           example: "********"
 responses:
-  201:
+  200:
     description: When an admin succesfully logs in.
 
   401:

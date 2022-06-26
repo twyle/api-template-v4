@@ -88,3 +88,7 @@ class AdminPasswordTooLong(Exception):
 
 class AdminPasswordNotAlphaNumeric(Exception):
     """Raised when the given admin password is not alphanumeric."""
+
+
+class InvalidAdminPassword(Exception):
+    """Raised when an invalid admin password is given."""

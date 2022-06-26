@@ -3,6 +3,7 @@
 import re
 
 from flask import jsonify
+from flask_jwt_extended import create_access_token, create_refresh_token
 
 from ..constants import (
     EMAIL_MAX_LENGTH,
@@ -21,6 +22,7 @@ from ..exceptions import (
     AdminPaswordTooShort,
     EmailAddressTooLong,
     EmptyAdminData,
+    InvalidAdminPassword,
     InvalidEmailAddressFormat,
     MissingEmailData,
     MissingEmailKey,
@@ -176,6 +178,88 @@ def is_admin_password_valid(admin_password: str):
     return True
 
 
+def log_in_admin(admin_data):
+    """Log in an admin."""
+    if not admin_data:
+        app_logger.exception('When creating a new admin, the admin_data was empty.')
+        raise EmptyAdminData('The admin data cannot be empty.')
+
+    if not isinstance(admin_data, dict):
+        app_logger.exception('When creating a new admin, the admin_data was nota dictionary.')
+        raise NonDictionaryAdminData('admin_data must be a dict')
+
+    if 'email' not in admin_data.keys():
+        app_logger.exception('When creating a new admin, the email key was missing from the admin_data.')
+        raise MissingEmailKey('The email is missing from the admin data')
+
+    if not admin_data['email']:
+        app_logger.exception('When creating a new admin, the email data was missing from the admin_data.')
+        raise MissingEmailData('The email data is missing')
+
+    if len(admin_data['email']) >= EMAIL_MAX_LENGTH:
+        app_logger.exception(f'When creating a new admin, the email key was longer than {EMAIL_MAX_LENGTH}.')
+        raise EmailAddressTooLong(f'The email address should be less than {EMAIL_MAX_LENGTH} characters!')
+
+    if not is_email_address_format_valid(admin_data['email']):
+        app_logger.exception('When creating a new admin, the email address format was invalid.')
+        raise InvalidEmailAddressFormat('The email address is invalid')
+
+    if 'password' not in admin_data.keys():
+        app_logger.exception('When creating a new admin, the password key was missing from the admin_data.')
+        raise MissingPasswordKey('The password is missing from the admin data')
+
+    if not admin_data['password']:
+        app_logger.exception('When creating a new admin, the password data was missing from the admin_data.')
+        raise MissingPasswordData('The password data is missing')
+
+    try:
+        is_admin_password_valid(admin_data['password'])
+    except ValueError as e:
+        raise e
+
+    if check_if_admin_exists(admin_data['email']):
+        admin = Admin.query.filter_by(email=admin_data['email']).first()
+        if admin:
+            if admin_data['password'] == admin.password:
+                access_token = create_access_token(admin.id)
+                refresh_token = create_refresh_token(admin.id)
+                admin_data = admin.get_admin()
+                admin_data['access token'] = access_token
+                admin_data['refresh token'] = refresh_token
+
+                return admin_data
+            raise InvalidAdminPassword('The admin password is invalid!')
+    raise AdminDoesNotExists('That Admin does not exist!')
+
+
+def handle_log_in_admin(admin_data: dict) -> dict:
+    """Handle a POST request to log in an admin."""
+    try:
+        data = log_in_admin(admin_data)
+    except (
+        EmptyAdminData,
+        NonDictionaryAdminData,
+        MissingEmailKey,
+        MissingEmailData,
+        EmailAddressTooLong,
+        InvalidEmailAddressFormat,
+        MissingPasswordKey,
+        MissingPasswordData,
+        AdminNameTooLong,
+        AdminNameTooShort,
+        ValueError,
+        AdminPaswordTooShort,
+        AdminPasswordTooLong,
+        AdminPasswordNotAlphaNumeric,
+        InvalidAdminPassword,
+        AdminDoesNotExists
+    ) as e:
+        app_logger.exception(e)
+        return jsonify({'error': str(e)}), 400
+    else:
+        return data, 200
+
+
 def create_new_admin(admin_data: dict) -> dict:  # pylint: disable=R0912
     """Create a new admin."""
     if not admin_data:
@@ -242,75 +326,27 @@ def create_new_admin(admin_data: dict) -> dict:  # pylint: disable=R0912
     return admin.get_admin()
 
 
-def handle_create_admin(request_data: dict):  # pylint: disable=R0911, R0912, R0915
+def handle_create_admin(request_data: dict):
     """Handle the POST request to the /admin route."""
     try:
         new_admin = create_new_admin(request_data)
-    except EmptyAdminData as e:
-        app_logger.error("When handling a get request to create a new admin, the admin passed in no data.")
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-    except NonDictionaryAdminData as e:
-        app_logger.error("When handling a get request to create a new admin, the admin passed in non-dictionary data.")
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-    except MissingEmailKey as e:
-        msg = "When handling a get request to create a new admin, the admin passed in data with no email key."
-        app_logger.error(msg)
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-    except MissingNameKey as e:
-        msg = "When handling a get request to create a new admin, the admin passed in data with no name key."
-        app_logger.error(msg)
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-    except MissingPasswordKey as e:
-        msg = "When handling a get request to create a new admin, the admin passed in data with no password key."
-        app_logger.error(msg)
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-    except EmailAddressTooLong as e:
-        app_logger.error("When handling a get request to create a new admin, the email was too long.")
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-    except InvalidEmailAddressFormat as e:
-        app_logger.error("When handling a get request to create a new admin, the email address was invalid.")
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-    except AdminExists as e:
-        app_logger.error("When handling a get request to create a new admin, the admin alredy exists.")
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 409
-    except MissingEmailData as e:
-        app_logger.error("When handling a get request to create a new admin, the email data was missing.")
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-    except MissingNameData as e:
-        app_logger.error("When handling a get request to create a new admin, the name data was missing.")
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-    except MissingPasswordData as e:
-        app_logger.error("When handling a get request to create a new admin, the password data was missing.")
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-    except AdminNameTooLong as e:
-        app_logger.error("When handling a get request to create a new admin, the name was too long.")
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-    except AdminNameTooShort as e:
-        app_logger.error("When handling a get request to create a new admin, the name was too short.")
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-    except AdminPaswordTooShort as e:
-        app_logger.error("When handling a get request to create a new admin, the password was too short.")
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-    except AdminPasswordTooLong as e:
-        app_logger.error("When handling a get request to create a new admin, the password was too long.")
-        app_logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-    except AdminPasswordNotAlphaNumeric as e:
-        app_logger.error("When handling a get request to create a new admin, the password was not alphanumeric.")
+    except (
+        EmptyAdminData,
+        NonDictionaryAdminData,
+        MissingEmailKey,
+        MissingNameKey,
+        MissingPasswordKey,
+        EmailAddressTooLong,
+        InvalidEmailAddressFormat,
+        AdminExists,
+        MissingEmailData,
+        MissingNameData,
+        AdminPasswordNotAlphaNumeric,
+        AdminPasswordTooLong,
+        AdminNameTooShort,
+        AdminNameTooLong,
+        MissingPasswordData
+    ) as e:
         app_logger.exception(e)
         return jsonify({'error': str(e)}), 400
     else:
@@ -337,15 +373,13 @@ def handle_get_admin(admin_id: int):
     """Handle the GET request to the /admin route."""
     try:
         admin = get_admin(admin_id)
-    except AdminDoesNotExists as e:
-        print(e)
-        return str(e), 404
-    except EmptyAdminData as e:
-        print(e)
-        return str(e), 400
-    except ValueError as e:
-        print(e)
-        return str(e), 400
+    except (
+        ValueError,
+        EmptyAdminData,
+        AdminDoesNotExists
+    ) as e:
+        app_logger.exception(e)
+        return jsonify({'error': str(e)}), 400
     else:
         return admin, 200
 
@@ -372,15 +406,13 @@ def handle_delete_admin(admin_id: int):
     """Handle the DELETE request to the /admin route."""
     try:
         admin = delete_admin(admin_id)
-    except AdminDoesNotExists as e:
-        print(e)
-        return str(e), 404
-    except EmptyAdminData as e:
-        print(e)
-        return str(e), 400
-    except ValueError as e:
-        print(e)
-        return str(e), 400
+    except (
+        ValueError,
+        EmptyAdminData,
+        AdminDoesNotExists
+    ) as e:
+        app_logger.exception(e)
+        return jsonify({'error': str(e)}), 400
     else:
         return admin, 200
 
@@ -436,54 +468,28 @@ def update_admin(admin_id: int, admin_data: dict) -> dict:  # pylint: disable=R0
     return admin.get_admin()
 
 
-def handle_update_admin(admin_id: int, admin_data: dict):  # pylint: disable=R0911,R0912
+def handle_update_admin(admin_id: int, admin_data: dict):
     """Handle the GET request to the /admin route."""
     try:
         admin = update_admin(admin_id, admin_data)
-    except AdminDoesNotExists as e:
-        print(e)
-        return str(e), 404
-    except EmptyAdminData as e:
-        print(e)
-        return str(e), 400
-    except ValueError as e:
-        print(e)
-        return str(e), 400
-    except NonDictionaryAdminData as e:
-        print(e)
-        return str(e), 400
-    except MissingEmailKey as e:
-        print(e)
-        return str(e), 400
-    except MissingNameKey as e:
-        print(e)
-        return str(e), 400
-    except MissingPasswordKey as e:
-        print(e)
-        return str(e), 400
-    except MissingEmailData as e:
-        print(e)
-        return str(e), 400
-    except MissingNameData as e:
-        print(e)
-        return str(e), 400
-    except MissingPasswordData as e:
-        print(e)
-        return str(e), 400
-    except EmailAddressTooLong as e:
-        print(e)
-        return str(e), 400
-    except AdminNameTooLong as e:
-        print(e)
-        return str(e), 400
-    except AdminNameTooShort as e:
-        print(e)
-        return str(e), 400
-    except InvalidEmailAddressFormat as e:
-        print(e)
-        return str(e), 400
-    except AdminExists as e:
-        print(e)
-        return str(e), 400
+    except (
+        AdminExists,
+        InvalidEmailAddressFormat,
+        AdminNameTooShort,
+        AdminNameTooLong,
+        EmailAddressTooLong,
+        MissingPasswordData,
+        MissingNameData,
+        MissingEmailData,
+        MissingPasswordKey,
+        MissingNameKey,
+        MissingEmailKey,
+        NonDictionaryAdminData,
+        ValueError,
+        EmptyAdminData,
+        AdminDoesNotExists
+    ) as e:
+        app_logger.exception(e)
+        return jsonify({'error': str(e)}), 400
     else:
         return admin, 200

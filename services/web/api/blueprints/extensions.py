@@ -43,7 +43,8 @@ def create_logger():
         },
         "loggers": {
             "": {
-                "handlers": ["standard", "kinesis", "critical mail handler"],
+                # "handlers": ["standard", "kinesis", "critical mail handler"],
+                "handlers": ["standard"],
                 "level": logging.INFO
             }
         }

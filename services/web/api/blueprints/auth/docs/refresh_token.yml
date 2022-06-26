@@ -1,0 +1,14 @@
+description: Get refresh token
+tags:
+  - Authentication
+produces:
+  - "application/json"
+security:
+  - APIKeyHeader: [ 'Authorization' ]
+get:
+  description: None
+responses:
+  200:
+    description: When the admin gets a new access token.
+  401:
+    description: When the access token is not included in the request.
