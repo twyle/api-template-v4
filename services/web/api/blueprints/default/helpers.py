@@ -2,6 +2,8 @@
 """This module has methods that are used in the other modules in this package."""
 import re
 
+from flask import jsonify
+
 from ..constants import EMAIL_MAX_LENGTH
 from ..exceptions import (
     EmailAddressTooLong,
@@ -119,34 +121,17 @@ def handle_create_user(request_data: dict):  # pylint: disable=R0911
     """Handle the POST request to the /user route."""
     try:
         new_user = create_new_user(request_data)
-    except EmptyUserData as e:
-        app_logger.error("When handling a get request to create a new user, the user passed in no data.")
+    except (
+        MissingEmailData,
+        UserExists,
+        InvalidEmailAddressFormat,
+        EmailAddressTooLong,
+        MissingEmailKey,
+        NonDictionaryUserData,
+        EmptyUserData,
+    ) as e:
         app_logger.exception(e)
-        return str(e), 400
-    except NonDictionaryUserData as e:
-        app_logger.error("When handling a get request to create a new user, the user passed in non-dictionary data.")
-        app_logger.exception(e)
-        return str(e), 400
-    except MissingEmailKey as e:
-        app_logger.error("When handling a get request to create a new user, the user passed in data with no email key.")
-        app_logger.exception(e)
-        return str(e), 400
-    except EmailAddressTooLong as e:
-        app_logger.error("When handling a get request to create a new user, the email was too long.")
-        app_logger.exception(e)
-        return str(e), 400
-    except InvalidEmailAddressFormat as e:
-        app_logger.error("When handling a get request to create a new user, the email address was invalid.")
-        app_logger.exception(e)
-        return str(e), 400
-    except UserExists as e:
-        app_logger.error("When handling a get request to create a new user, the user alredy exists.")
-        app_logger.exception(e)
-        return str(e), 400
-    except MissingEmailData as e:
-        app_logger.error("When handling a get request to create a new user, the email data was missing.")
-        app_logger.exception(e)
-        return str(e), 400
+        return jsonify({'error': str(e)}), 400
     else:
         return new_user, 201
 
@@ -171,15 +156,13 @@ def handle_get_user(user_id: int):
     """Handle the GET request to the /user route."""
     try:
         user = get_user(user_id)
-    except UserDoesNotExists as e:
-        print(e)
-        return str(e), 404
-    except EmptyUserData as e:
-        print(e)
-        return str(e), 400
-    except ValueError as e:
-        print(e)
-        return str(e), 400
+    except (
+        ValueError,
+        EmptyUserData,
+        UserDoesNotExists
+    ) as e:
+        app_logger.exception(e)
+        return jsonify({'error': str(e)}), 400
     else:
         return user, 200
 
@@ -206,15 +189,13 @@ def handle_delete_user(user_id: int):
     """Handle the DELETE request to the /user route."""
     try:
         user = delete_user(user_id)
-    except UserDoesNotExists as e:
-        print(e)
-        return str(e), 404
-    except EmptyUserData as e:
-        print(e)
-        return str(e), 400
-    except ValueError as e:
-        print(e)
-        return str(e), 400
+    except (
+        ValueError,
+        EmptyUserData,
+        UserDoesNotExists
+    ) as e:
+        app_logger.exception(e)
+        return jsonify({'error': str(e)}), 400
     else:
         return user, 200
 
@@ -262,32 +243,18 @@ def handle_update_user(user_id: int, user_data: dict):  # pylint: disable=R0911
     """Handle the GET request to the /user route."""
     try:
         user = update_user(user_id, user_data)
-    except UserDoesNotExists as e:
-        print(e)
-        return str(e), 404
-    except EmptyUserData as e:
-        print(e)
-        return str(e), 400
-    except ValueError as e:
-        print(e)
-        return str(e), 400
-    except NonDictionaryUserData as e:
-        print(e)
-        return str(e), 400
-    except MissingEmailKey as e:
-        print(e)
-        return str(e), 400
-    except EmailAddressTooLong as e:
-        print(e)
-        return str(e), 400
-    except InvalidEmailAddressFormat as e:
-        print(e)
-        return str(e), 400
-    except UserExists as e:
-        print(e)
-        return str(e), 400
-    except MissingEmailData as e:
-        print(e)
-        return str(e), 400
+    except (
+        MissingEmailData,
+        UserExists,
+        InvalidEmailAddressFormat,
+        EmailAddressTooLong,
+        MissingEmailKey,
+        NonDictionaryUserData,
+        ValueError,
+        EmptyUserData,
+        UserDoesNotExists
+    ) as e:
+        app_logger.exception(e)
+        return jsonify({'error': str(e)}), 400
     else:
         return user, 200
