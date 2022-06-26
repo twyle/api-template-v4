@@ -123,7 +123,7 @@ def check_if_database_exists(db_connection_string: str) -> bool:
     return db_exists
 
 
-def are_environment_variables_set() -> bool:  # pylint: disable=R0911, R0915
+def are_environment_variables_set() -> bool:  # pylint: disable=R0911, R0915, R1710, R0912
     """Check if all the environment variables are set.
 
     Raises
@@ -198,6 +198,34 @@ def are_environment_variables_set() -> bool:  # pylint: disable=R0911, R0915
         app_logger.info(f"The MAIL_HOST is set to {os.environ['MAIL_HOST']}")
     except KeyError:
         app_logger.exception('The MAIL_HOST is not set')
+        return False
+
+    try:
+        os.environ['MAIL_PORT']  # pylint: disable=W0104
+        app_logger.info(f"The MAIL_PORT is set to {os.environ['MAIL_PORT']}")
+    except KeyError:
+        app_logger.exception('The MAIL_PORT is not set')
+        return False
+
+    try:
+        os.environ['MAIL_USERNAME']  # pylint: disable=W0104
+        app_logger.info(f"The MAIL_USERNAME is set to {os.environ['MAIL_USERNAME']}")
+    except KeyError:
+        app_logger.exception('The MAIL_USERNAME is not set')
+        return
+
+    try:
+        os.environ['MAIL_PASSWORD']  # pylint: disable=W0104
+        app_logger.info(f"The MAIL_PASSWORD is set to {os.environ['MAIL_PASSWORD']}")
+    except KeyError:
+        app_logger.exception('The MAIL_PASSWORD is not set')
+        return False
+
+    try:
+        os.environ['FIREHOSE_DELIVERY_STREAM']  # pylint: disable=W0104
+        app_logger.info(f"The FIREHOSE_DELIVERY_STREAM is set to {os.environ['FIREHOSE_DELIVERY_STREAM']}")
+    except KeyError:
+        app_logger.exception('The FIREHOSE_DELIVERY_STREAM is not set')
         return False
 
     try:

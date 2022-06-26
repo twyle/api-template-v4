@@ -1,6 +1,10 @@
 description: Update Admin
 tags:
   - Administrator
+produces:
+  - "application/json"
+security:
+  - APIKeyHeader: [ 'Authorization' ]
 parameters:
   - name: body
     description: The body should contain the Admin data to update

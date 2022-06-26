@@ -52,6 +52,16 @@ def login():
     return jsonify({'error': 'Wrong creds'}), 401
 
 
+@auth.route("/refresh", methods=["GET"])
+@jwt_required(refresh=True)
+@swag_from("./docs/refresh_token.yml", endpoint='auth.refresh', methods=['GET'])
+def refresh():
+    """Generate a refresh token."""
+    identity = get_jwt_identity()
+    access_token = create_access_token(identity=identity)
+    return jsonify(access_token=access_token), 200
+
+
 @auth.route('/me', methods=['GET'])
 @jwt_required()
 @swag_from("./docs/get_admin.yml", endpoint='auth.get_admin', methods=['GET'])
