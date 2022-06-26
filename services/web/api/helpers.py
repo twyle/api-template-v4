@@ -123,7 +123,7 @@ def check_if_database_exists(db_connection_string: str) -> bool:
     return db_exists
 
 
-def are_environment_variables_set() -> bool:  # pylint: disable=R0911, R0915, R1710, R0912
+def are_environment_variables_set() -> bool:  # pylint: disable=R0912,R0915
     """Check if all the environment variables are set.
 
     Raises
