@@ -97,7 +97,7 @@ class CustomEmailLogger(logging.Handler):
             log_record = json.loads(self.format(record))
 
             # Try to send the message.
-            if log_record['levelname'] in ['WARNING', 'CRITICAL']:
+            if log_record['levelname'] in ['CRITICAL']:
                 with SMTP_SSL(self.mailhost, self.mailport) as server:
                     SUBJECT = log_record['levelname']
                     BODY_HTML = f"""
