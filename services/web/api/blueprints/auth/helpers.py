@@ -326,7 +326,7 @@ def create_new_admin(admin_data: dict) -> dict:  # pylint: disable=R0912
     return admin.get_admin()
 
 
-def handle_create_admin(request_data: dict):  # pylint: disable=R0911, R0912, R0915
+def handle_create_admin(request_data: dict):
     """Handle the POST request to the /admin route."""
     try:
         new_admin = create_new_admin(request_data)
@@ -468,7 +468,7 @@ def update_admin(admin_id: int, admin_data: dict) -> dict:  # pylint: disable=R0
     return admin.get_admin()
 
 
-def handle_update_admin(admin_id: int, admin_data: dict):  # pylint: disable=R0911,R0912
+def handle_update_admin(admin_id: int, admin_data: dict):
     """Handle the GET request to the /admin route."""
     try:
         admin = update_admin(admin_id, admin_data)
