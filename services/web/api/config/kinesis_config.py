@@ -24,9 +24,17 @@ class KinesisFirehoseDeliveryStreamHandler(logging.StreamHandler):
 
         self.__firehose = None
         self.__stream_buffer = []
+        self.__aws_key = os.environ['AWS_KEY']
+        self.__aws_secret = os.environ['AWS_SECRET']
+        self.__aws_region = os.environ['AWS_REGION']
 
         try:
-            self.__firehose = boto3.client('firehose')
+            self.__firehose = boto3.client(
+                'firehose',
+                aws_access_key_id=self.__aws_key,
+                aws_secret_access_key=self.__aws_secret,
+                region_name=self.__aws_region
+            )
         except Exception:
             print('Firehose client initialization failed.')
 

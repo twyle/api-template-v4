@@ -123,7 +123,7 @@ def check_if_database_exists(db_connection_string: str) -> bool:
     return db_exists
 
 
-def are_environment_variables_set() -> bool:  # pylint: disable=R0912,R0915
+def are_environment_variables_set() -> bool:  # pylint: disable=R0912,R0915,R0911
     """Check if all the environment variables are set.
 
     Raises
@@ -137,97 +137,117 @@ def are_environment_variables_set() -> bool:  # pylint: disable=R0912,R0915
         True if all the environment variables are set else False if any is missing.
 
     """
-    env_vars_set = True
     try:
         os.environ['FLASK_APP']  # pylint: disable=W0104
         app_logger.info(f"The FLASK_APP is set to {os.environ['FLASK_APP']}")
     except KeyError:
         app_logger.exception('The FLASK_APP is not set')
-        env_vars_set = False
+        return False
 
     try:
         os.environ['FLASK_ENV']  # pylint: disable=W0104
         app_logger.info(f"The FLASK_ENV is set to {os.environ['FLASK_ENV']}")
     except KeyError:
         app_logger.exception('The FLASK_ENV is not set')
-        env_vars_set = False
+        return False
 
     try:
         os.environ['SECRET_KEY']  # pylint: disable=W0104
         app_logger.info(f"The SECRET_KEY is set to {os.environ['SECRET_KEY']}")
     except KeyError:
         app_logger.exception('The SECRET_KEY is not set')
-        env_vars_set = False
+        return False
 
     try:
         os.environ['POSTGRES_HOST']  # pylint: disable=W0104
         app_logger.info(f"The POSTGRES_HOST is set to {os.environ['POSTGRES_HOST']}")
     except KeyError:
         app_logger.exception('The POSTGRES_HOST is not set')
-        env_vars_set = False
+        return False
 
     try:
         os.environ['POSTGRES_DB']  # pylint: disable=W0104
         app_logger.info(f"The POSTGRES_DB is set to {os.environ['POSTGRES_DB']}")
     except KeyError:
         app_logger.exception('The POSTGRES_DB is not set')
-        env_vars_set = False
+        return False
 
     try:
         os.environ['POSTGRES_PORT']  # pylint: disable=W0104
         app_logger.info(f"The POSTGRES_PORT is set to {os.environ['POSTGRES_PORT']}")
     except KeyError:
         app_logger.exception('The POSTGRES_PORT is not set')
-        env_vars_set = False
+        return False
 
     try:
         os.environ['POSTGRES_USER']  # pylint: disable=W0104
         app_logger.info(f"The POSTGRES_USER is set to {os.environ['POSTGRES_USER']}")
     except KeyError:
         app_logger.exception('The POSTGRES_USER is not set')
-        env_vars_set = False
+        return False
 
     try:
         os.environ['POSTGRES_PASSWORD']  # pylint: disable=W0104
         app_logger.info(f"The POSTGRES_PASSWORD is set to {os.environ['POSTGRES_PASSWORD']}")
     except KeyError:
         app_logger.exception('The POSTGRES_PASSWORD is not set')
-        env_vars_set = False
+        return False
 
     try:
         os.environ['MAIL_HOST']  # pylint: disable=W0104
-        app_logger.info(f"The MAIL_HOST is set to {os.environ['MAIL_HOST']}")
+        app_logger.info("The MAIL_HOST is set.")
     except KeyError:
         app_logger.exception('The MAIL_HOST is not set')
-        env_vars_set = False
+        return False
 
     try:
         os.environ['MAIL_PORT']  # pylint: disable=W0104
-        app_logger.info(f"The MAIL_PORT is set to {os.environ['MAIL_PORT']}")
+        app_logger.info("The MAIL_PORT is set.")
     except KeyError:
         app_logger.exception('The MAIL_PORT is not set')
-        env_vars_set = False
+        return False
 
     try:
         os.environ['MAIL_USERNAME']  # pylint: disable=W0104
-        app_logger.info(f"The MAIL_USERNAME is set to {os.environ['MAIL_USERNAME']}")
+        app_logger.info("The MAIL_USERNAME is set.")
     except KeyError:
         app_logger.exception('The MAIL_USERNAME is not set')
-        env_vars_set = False
+        return False
+
+    try:
+        os.environ['AWS_KEY']  # pylint: disable=W0104
+        app_logger.info("The AWS_KEY is set.")
+    except KeyError:
+        app_logger.exception('The AWS_KEY is not set')
+        return False
+
+    try:
+        os.environ['AWS_SECRET']  # pylint: disable=W0104
+        app_logger.info("The AWS_SECRET is set.")
+    except KeyError:
+        app_logger.exception('The AWS_SECRET is not set')
+        return False
+
+    try:
+        os.environ['AWS_REGION']  # pylint: disable=W0104
+        app_logger.info("The AWS_REGION is set.")
+    except KeyError:
+        app_logger.exception('The AWS_REGION is not set')
+        return False
 
     try:
         os.environ['MAIL_PASSWORD']  # pylint: disable=W0104
-        app_logger.info(f"The MAIL_PASSWORD is set to {os.environ['MAIL_PASSWORD']}")
+        app_logger.info("The MAIL_PASSWORD is set.")
     except KeyError:
         app_logger.exception('The MAIL_PASSWORD is not set')
-        env_vars_set = False
+        return False
 
     try:
         os.environ['FIREHOSE_DELIVERY_STREAM']  # pylint: disable=W0104
         app_logger.info(f"The FIREHOSE_DELIVERY_STREAM is set to {os.environ['FIREHOSE_DELIVERY_STREAM']}")
     except KeyError:
         app_logger.exception('The FIREHOSE_DELIVERY_STREAM is not set')
-        env_vars_set = False
+        return False
 
     try:
         db_con_str = create_db_conn_string(os.environ['FLASK_ENV'])
@@ -235,11 +255,11 @@ def are_environment_variables_set() -> bool:  # pylint: disable=R0912,R0915
 
         if not db_exists:
             app_logger.info(f'The database {db_con_str} does not exist.')
-            env_vars_set = False
+            return False
 
     except ValueError as v:
         app_logger.exception(v)
         app_logger.exception('Unable to verify database existence...')
-        env_vars_set = False
+        return False
 
-    return env_vars_set
+    return True
